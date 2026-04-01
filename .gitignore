@@ -1,0 +1,11 @@
+# Local config (use config.example.yaml in the repo)
+config.yaml
+
+# All runtime/local data: integration outputs, sync state, credentials
+data/
+
+dev/
+
+# Python
+__pycache__/
+*.py[cod]

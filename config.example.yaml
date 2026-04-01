@@ -1,0 +1,76 @@
+# ─────────────────────────────────────────────
+# Frame TV Dashboard — Example Configuration
+# Copy this file to config.yaml and edit it.
+# ─────────────────────────────────────────────
+
+# Samsung Frame TV
+tv:
+  ip: "192.168.1.x"  # LAN IP of your Frame TV
+
+# Art upload settings
+art:
+  matte: "none"           # Landscape matte applied on upload (e.g. "none", "shadowbox_polar")
+  portrait_matte: "none"  # Portrait matte applied on upload
+
+# Dashboard layout
+layout:
+  columns: 2          # Number of widget columns
+  rows: auto          # "auto" to fit all widgets, or a fixed number
+  margin: 120         # Outer margin in pixels (base image is 3840×2160)
+  gutter: 40          # Gap between widgets in pixels
+  widgets:
+    - type: clock
+      title: Now
+      # format: "%H:%M"          # strftime for time (default 24h; flip-clock segments)
+      # date_format: "%A, %b %d" # strftime format for the date
+      # show_date: true
+
+    - type: list
+      title: Shop
+      source: lists/shop.json    # Path to a {"items": [...]} JSON file
+
+    - type: note
+      title: Note
+      text: "Welcome to your Frame Dashboard."
+      # Or point at a file instead of inline text:
+      # source: lists/note.json
+
+# Integrations — comment out or set enabled: false to disable
+integrations:
+
+  # Google Keep
+  keep:
+    enabled: true
+    email: you@gmail.com
+    # Credentials: store your master token in the system keyring (recommended):
+    #   macOS:  security add-generic-password -a 'you@gmail.com' -s 'gkeep-token' -w '<token>'
+    #   Linux:  secret-tool store --label='gkeep-token' service gkeep-token username you@gmail.com
+    # Or set it directly here (less secure):
+    # master_token: "your_token_here"
+    # password: "your_google_password"  # only if you don't use master_token
+    state_file: data/keep/state.json
+    sync_interval_seconds: 300          # How often to sync from Keep (seconds)
+    targets:
+      - type: list
+        title: groceries                # Exact title of the Keep list
+        output: data/keep/shop.json
+        include_checked: false          # Set true to include crossed-off items
+
+      - type: list
+        label: Today                    # Keep label to filter by
+        output: data/keep/today.json
+        include_checked: false
+
+      - type: note
+        title: Frame Note               # Exact title of the Keep note
+        output: data/keep/note.json
+
+  # Google Calendar (not yet implemented — scaffold only)
+  calendar:
+    enabled: false
+    # credentials_file: data/calendar/credentials.json
+    # token_file: data/calendar/token.json
+    # calendar_id: primary
+    # lookahead_days: 7
+    # output: data/calendar/events.json
+    # sync_interval_seconds: 300
