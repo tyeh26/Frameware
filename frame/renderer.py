@@ -42,9 +42,41 @@ def resolve_widget_height(widget: dict, default: int) -> int:
     return int(explicit) if explicit is not None else default
 
 
+def widget_rect_from_grid(
+    widget: dict, layout: dict, canvas_w: int, canvas_h: int
+) -> tuple[int, int, int, int]:
+    """Convert Gridstack-style x/y/w/h grid coordinates to a pixel rectangle.
+
+    Grid geometry (mirrors Gridstack.js constructor options):
+      columns    — total column count
+      cell_height — pixel height of one row  (Gridstack: cellHeight)
+      gutter     — pixel gap between cells   (Gridstack: margin)
+      margin     — pixel padding around the whole grid (outside Gridstack)
+    """
+    cols = max(1, int(layout.get("columns", 12)))
+    cell_h = int(layout.get("cell_height", 200))
+    margin = int(layout.get("margin", 120))
+    gutter = int(layout.get("gutter", 40))
+
+    cell_w = (canvas_w - 2 * margin - gutter * (cols - 1)) / cols
+
+    gx = int(widget.get("x", 0))
+    gy = int(widget.get("y", 0))
+    gw = int(widget.get("w", cols))
+    gh = int(widget.get("h", 1))
+
+    x1 = int(margin + gx * (cell_w + gutter))
+    y1 = int(margin + gy * (cell_h + gutter))
+    x2 = int(x1 + gw * cell_w + (gw - 1) * gutter)
+    y2 = int(y1 + gh * cell_h + (gh - 1) * gutter)
+
+    return x1, y1, x2, y2
+
+
 def compute_grid_cells(
     layout: dict, count: int, width: int, height: int, widgets: list = None
 ) -> list[tuple[int, int, int, int]]:
+    """Legacy auto-flow placement: fills columns top-to-bottom, left-to-right."""
     cols = max(1, int(layout.get("columns", 2)))
     margin = int(layout.get("margin", 120))
     gutter = int(layout.get("gutter", 40))
@@ -147,9 +179,21 @@ def create_dashboard_frame(
 
     draw = ImageDraw.Draw(img)
     widgets = layout.get("widgets", [])
-    cells = compute_grid_cells(layout, len(widgets), 3840, 2160, widgets)
-    for widget, rect in zip(widgets, cells):
+
+    # Widgets with explicit x/y/w/h use Gridstack-native grid positioning.
+    # Widgets without those keys fall back to legacy auto-flow placement.
+    _GRID_KEYS = {"x", "y", "w", "h"}
+    explicit = [w for w in widgets if _GRID_KEYS.issubset(w)]
+    implicit = [w for w in widgets if not _GRID_KEYS.issubset(w)]
+
+    for widget in explicit:
+        rect = widget_rect_from_grid(widget, layout, 3840, 2160)
         render_widget(draw, widget, rect, base_dir, font_path)
+
+    if implicit:
+        cells = compute_grid_cells(layout, len(implicit), 3840, 2160, implicit)
+        for widget, rect in zip(implicit, cells):
+            render_widget(draw, widget, rect, base_dir, font_path)
 
     img.save(preview_path, quality=85)
 
