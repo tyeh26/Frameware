@@ -1,46 +1,11 @@
 import io
 import json
-import math
 import os
-from datetime import datetime
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
-
-def get_font(size: int, font_path: str = None) -> ImageFont.FreeTypeFont:
-    candidates = []
-    if font_path and os.path.exists(font_path):
-        candidates.append(font_path)
-    candidates += [
-        "/Library/Fonts/Arial Bold.ttf",
-        "/Library/Fonts/Arial.ttf",
-        "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
-        "/System/Library/Fonts/Supplemental/Arial.ttf",
-    ]
-    for path in candidates:
-        if os.path.exists(path):
-            try:
-                return ImageFont.truetype(path, size)
-            except Exception:
-                pass
-    return ImageFont.load_default()
-
-
-def wrap_text(draw: ImageDraw.Draw, text: str, font, max_width: int) -> list[str]:
-    words = text.split()
-    if not words:
-        return []
-    lines = []
-    current = words[0]
-    for word in words[1:]:
-        test = f"{current} {word}"
-        if draw.textlength(test, font=font) <= max_width:
-            current = test
-        else:
-            lines.append(current)
-            current = word
-    lines.append(current)
-    return lines
+from frame.utils import get_font, wrap_text
+from frame.widgets.clock import CLOCK_SIZES, render_clock
 
 
 def load_list_items(source: str, base_dir: str) -> list[str]:
@@ -67,111 +32,14 @@ def load_list_items(source: str, base_dir: str) -> list[str]:
     return []
 
 
-def _draw_flip_cell(
-    draw: ImageDraw.Draw,
-    x: int,
-    y: int,
-    w: int,
-    h: int,
-    char: str,
-    font,
-) -> None:
-    """Single split-flap style card (retro flip clock)."""
-    r = max(6, min(14, h // 12))
-    bg = (38, 38, 42)
-    edge = (72, 72, 78)
-    hinge = (12, 12, 14)
-    top_shade = (48, 48, 52)
-    digit = (245, 240, 232)
-
-    draw.rounded_rectangle([x, y, x + w, y + h], radius=r, fill=bg, outline=edge, width=2)
-    mid = y + h // 2
-    draw.rectangle([x + 3, y + 3, x + w - 3, mid], fill=top_shade)
-    draw.line([(x + r, mid), (x + w - r, mid)], fill=hinge, width=3)
-
-    bbox = draw.textbbox((0, 0), char, font=font)
-    tw = bbox[2] - bbox[0]
-    th = bbox[3] - bbox[1]
-    tx = x + (w - tw) // 2 - bbox[0]
-    ty = y + (h - th) // 2 - bbox[1]
-    draw.text((tx, ty), char, fill=digit, font=font)
-
-
-def _draw_retro_flip_clock(
-    draw: ImageDraw.Draw,
-    body_left: int,
-    body_top: int,
-    body_right: int,
-    body_bottom: int,
-    time_str: str,
-    font_path: str = None,
-) -> None:
-    """Lay out time_str as retro flip segments; scales to fit the body rect."""
-    gap = 16
-    max_w = body_right - body_left
-    max_h = body_bottom - body_top
-    if max_w <= 0 or max_h <= 0 or not time_str:
-        return
-
-    chosen = None
-    for font_size in range(220, 36, -4):
-        font = get_font(font_size, font_path)
-        dw = max(int(draw.textlength(str(d), font=font)) for d in "0123456789")
-        cell_w = dw + 28
-        colon_w = max(int(cell_w * 0.42), int(font_size * 0.3))
-        cell_h = int(font_size * 1.38)
-
-        total_w = 0
-        first = True
-        for c in time_str:
-            if c == " ":
-                total_w += (gap if not first else 0) + int(cell_w * 0.35)
-                first = False
-                continue
-            if not first:
-                total_w += gap
-            first = False
-            total_w += colon_w if c == ":" else cell_w
-
-        if total_w <= max_w and cell_h <= max_h:
-            chosen = (font, cell_w, colon_w, cell_h)
-            break
-
-    if chosen is None:
-        font = get_font(36, font_path)
-        dw = max(int(draw.textlength(str(d), font=font)) for d in "0123456789")
-        cell_w = dw + 28
-        colon_w = max(int(cell_w * 0.42), 12)
-        cell_h = int(36 * 1.38)
-        chosen = (font, cell_w, colon_w, cell_h)
-
-    font, cell_w, colon_w, cell_h = chosen
-
-    total_w = 0
-    first = True
-    for c in time_str:
-        if c == " ":
-            total_w += (gap if not first else 0) + int(cell_w * 0.35)
-            first = False
-            continue
-        if not first:
-            total_w += gap
-        first = False
-        total_w += colon_w if c == ":" else cell_w
-
-    x = body_left + max(0, (max_w - total_w) // 2)
-    first = True
-    for c in time_str:
-        if c == " ":
-            x += (gap if not first else 0) + int(cell_w * 0.35)
-            first = False
-            continue
-        if not first:
-            x += gap
-        first = False
-        w = colon_w if c == ":" else cell_w
-        _draw_flip_cell(draw, x, body_top, w, cell_h, c, font)
-        x += w
+def resolve_widget_height(widget: dict, default: int) -> int:
+    """Return pixel height for a widget, resolving S/M/L size aliases for clocks."""
+    if widget.get("type") == "clock":
+        size = str(widget.get("size", "")).upper()
+        if size in CLOCK_SIZES:
+            return CLOCK_SIZES[size]
+    explicit = widget.get("height")
+    return int(explicit) if explicit is not None else default
 
 
 def compute_grid_cells(
@@ -195,8 +63,7 @@ def compute_grid_cells(
     for i in range(count):
         c = i % cols
         widget = widgets[i] if widgets and i < len(widgets) else {}
-        widget_h = widget.get("height")
-        cell_h_actual = int(widget_h) if widget_h is not None else default_cell_h
+        cell_h_actual = resolve_widget_height(widget, default_cell_h)
 
         x1 = int(x_start + c * (cell_w + gutter))
         y1 = int(col_y[c])
@@ -237,29 +104,7 @@ def render_widget(
     wtype = widget.get("type", "note")
 
     if wtype == "clock":
-        now = datetime.now()
-        time_fmt = widget.get("format", "%H:%M")
-        date_fmt = widget.get("date_format", "%A, %b %d")
-        show_date = widget.get("show_date", True)
-        time_text = now.strftime(time_fmt)
-        date_font = get_font(72, font_path)
-        body_bottom = y2 - pad
-        if show_date:
-            body_bottom -= int(date_font.getbbox("Ag")[3] - date_font.getbbox("Ag")[1]) + 16
-        _draw_retro_flip_clock(
-            draw, body_left, body_top, body_right, body_bottom, time_text, font_path
-        )
-        if show_date:
-            sample = now.strftime(date_fmt)
-            dh = date_font.getbbox(sample)[3] - date_font.getbbox(sample)[1]
-            flip_bottom = body_bottom
-            date_y = flip_bottom + 16
-            draw.text(
-                (body_left, date_y),
-                sample,
-                fill=(220, 218, 212),
-                font=date_font,
-            )
+        render_clock(draw, widget, body_left, body_top, body_right, y2 - pad, font_path)
         return
 
     if wtype == "list":

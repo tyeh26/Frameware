@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>frameware</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0e10;
+      --surface: #18181b;
+      --border: #2a2a2f;
+      --text: #e4e4e7;
+      --muted: #71717a;
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --success: #22c55e;
+      --error: #ef4444;
+      --radius: 10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 24px 20px 48px;
+    }
+
+    header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    header span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1400px;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-header h2 {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    .card-body {
+      padding: 18px;
+    }
+
+    /* Preview */
+    #preview-img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: 6px;
+      background: var(--bg);
+    }
+
+    #preview-status {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Config editor */
+    #config-textarea {
+      width: 100%;
+      height: 480px;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      font-family: "SF Mono", "Fira Code", Menlo, Monaco, monospace;
+      font-size: 12.5px;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+      tab-size: 2;
+    }
+
+    #config-textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .config-footer {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    #config-status {
+      font-size: 12px;
+      flex: 1;
+    }
+
+    #config-status.ok   { color: var(--success); }
+    #config-status.err  { color: var(--error); }
+
+    /* Buttons */
+    button {
+      appearance: none;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 7px 16px;
+      transition: background 0.15s, opacity 0.15s;
+    }
+
+    button:disabled { opacity: 0.45; cursor: default; }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+    .btn-secondary {
+      background: var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover:not(:disabled) { background: #3a3a42; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>frameware</h1>
+    <span id="host-hint"></span>
+  </header>
+
+  <div class="layout">
+
+    <!-- Preview card -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Current Frame</h2>
+        <button class="btn-secondary" id="btn-refresh">Refresh Now</button>
+      </div>
+      <div class="card-body">
+        <img id="preview-img" src="/api/preview" alt="Frame preview">
+        <p id="preview-status">Loading…</p>
+      </div>
+    </div>
+
+    <!-- Config editor card -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Config</h2>
+      </div>
+      <div class="card-body">
+        <textarea id="config-textarea" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+        <div class="config-footer">
+          <button class="btn-primary" id="btn-save">Save &amp; Apply</button>
+          <span id="config-status"></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const previewImg    = document.getElementById('preview-img');
+    const previewStatus = document.getElementById('preview-status');
+    const configTA      = document.getElementById('config-textarea');
+    const configStatus  = document.getElementById('config-status');
+    const btnRefresh    = document.getElementById('btn-refresh');
+    const btnSave       = document.getElementById('btn-save');
+    const hostHint      = document.getElementById('host-hint');
+
+    hostHint.textContent = window.location.host;
+
+    // --- Preview ---
+
+    let lastUpdated = null;
+
+    function reloadPreview() {
+      const url = '/api/preview?t=' + Date.now();
+      const img = new Image();
+      img.onload = () => {
+        previewImg.src = url;
+        lastUpdated = new Date();
+        previewStatus.textContent = 'Updated ' + lastUpdated.toLocaleTimeString();
+      };
+      img.onerror = () => {
+        previewStatus.textContent = 'Preview not yet available.';
+      };
+      img.src = url;
+    }
+
+    reloadPreview();
+    setInterval(reloadPreview, 60_000);
+
+    btnRefresh.addEventListener('click', () => {
+      btnRefresh.disabled = true;
+      btnRefresh.textContent = 'Refreshing…';
+      fetch('/api/refresh', { method: 'POST' })
+        .then(r => r.json())
+        .then(() => {
+          // Give the orchestrator a few seconds to render then reload preview
+          setTimeout(() => {
+            reloadPreview();
+            btnRefresh.disabled = false;
+            btnRefresh.textContent = 'Refresh Now';
+          }, 4000);
+        })
+        .catch(() => {
+          btnRefresh.disabled = false;
+          btnRefresh.textContent = 'Refresh Now';
+        });
+    });
+
+    // --- Config editor ---
+
+    function loadConfig() {
+      fetch('/api/config')
+        .then(r => r.text())
+        .then(text => { configTA.value = text; })
+        .catch(() => { configTA.value = '# Could not load config'; });
+    }
+
+    loadConfig();
+
+    btnSave.addEventListener('click', () => {
+      btnSave.disabled = true;
+      btnSave.textContent = 'Saving…';
+      configStatus.textContent = '';
+      configStatus.className = '';
+
+      fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        body: configTA.value,
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) {
+            configStatus.textContent = '✗ ' + data.error;
+            configStatus.className = 'err';
+          } else {
+            configStatus.textContent = '✓ Saved — frame update triggered';
+            configStatus.className = 'ok';
+            setTimeout(() => { configStatus.textContent = ''; configStatus.className = ''; }, 5000);
+          }
+        })
+        .catch(err => {
+          configStatus.textContent = '✗ Network error: ' + err;
+          configStatus.className = 'err';
+        })
+        .finally(() => {
+          btnSave.disabled = false;
+          btnSave.textContent = 'Save & Apply';
+        });
+    });
+
+    // Tab key inserts spaces in the textarea
+    configTA.addEventListener('keydown', e => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const s = configTA.selectionStart;
+        const val = configTA.value;
+        configTA.value = val.slice(0, s) + '  ' + val.slice(configTA.selectionEnd);
+        configTA.selectionStart = configTA.selectionEnd = s + 2;
+      }
+    });
+  </script>
+</body>
+</html>
