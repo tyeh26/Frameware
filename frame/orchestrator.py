@@ -1,4 +1,5 @@
 import os
+import re
 import threading
 from datetime import datetime
 
@@ -37,7 +38,7 @@ class Orchestrator:
         while not stop_event.is_set():
             config = self._reload_config()
             tv_ip = config.get("tv", {}).get("ip")
-            layout = config.get("layout", {})
+            layout = self._resolve_widget_sources(config.get("layout", {}))
             art_cfg = config.get("art", {})
 
             base_image_rel = art_cfg.get("base_image")
@@ -80,6 +81,21 @@ class Orchestrator:
     def _ensure_dirs(self):
         for subdir in ("www", "art", "data/frame", "data/keep", "data/calendar"):
             os.makedirs(os.path.join(self.base_dir, subdir), exist_ok=True)
+
+    @staticmethod
+    def _resolve_widget_sources(layout: dict) -> dict:
+        """Resolve keep_title/keep_label references in widgets to their output file paths."""
+        widgets = []
+        for w in layout.get("widgets", []):
+            w = dict(w)
+            keep_title = w.get("keep_title")
+            keep_label = w.get("keep_label")
+            if (keep_title or keep_label) and not w.get("source"):
+                slug_key = keep_title or keep_label
+                slug = re.sub(r"[^a-z0-9]+", "_", slug_key.lower().strip()).strip("_") or "unnamed"
+                w["source"] = f"data/keep/{slug}.json"
+            widgets.append(w)
+        return {**layout, "widgets": widgets}
 
     def _migrate_legacy_state(self):
         """One-time migration: move old state/ and lists/ files into data/."""

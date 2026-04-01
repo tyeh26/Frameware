@@ -3,14 +3,16 @@
 Frame TV Dashboard — entry point.
 
 Usage:
-  python main.py                        # normal run
+  python main.py                        # normal run (web UI on by default)
   python main.py --dev                  # hot-reload on .py file changes
   python main.py --config /path/to.yaml # custom config location
+  python main.py --no-web               # disable the web UI
 """
 
 import argparse
 import os
 import signal
+import socket
 import sys
 import threading
 
@@ -20,19 +22,31 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_CONFIG = os.path.join(BASE_DIR, "config.yaml")
 
 
+def _find_free_port(start: int, max_tries: int = 10) -> int:
+    for port in range(start, start + max_tries):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            try:
+                s.bind(("0.0.0.0", port))
+                return port
+            except OSError:
+                continue
+    raise OSError(f"No free port found in range {start}–{start + max_tries - 1}")
+
+
 def load_config(path: str) -> dict:
     with open(path, "r") as f:
         return yaml.safe_load(f)
 
 
-def build_integrations(config: dict, base_dir: str) -> list:
+def build_integrations(config: dict, base_dir: str, config_path: str) -> list:
     integrations = []
     int_cfg = config.get("integrations", {}) or {}
 
     keep_cfg = int_cfg.get("keep", {}) or {}
     if keep_cfg.get("enabled", False):
         from integrations.keep.fetcher import KeepFetcher
-        integrations.append(KeepFetcher(keep_cfg, base_dir))
+        integrations.append(KeepFetcher(keep_cfg, base_dir, config_path))
 
     cal_cfg = int_cfg.get("calendar", {}) or {}
     if cal_cfg.get("enabled", False):
@@ -69,6 +83,35 @@ def start_dev_watcher(base_dir: str, stop_event: threading.Event):
     print("[dev] Hot-reload active — watching .py files for changes.")
 
 
+def _start_web(config: dict, config_path: str, orchestrator, stop_event: threading.Event):
+    """Start the Flask web UI and mDNS registration in daemon threads."""
+    web_cfg = config.get("web", {}) or {}
+    requested = int(web_cfg.get("port", 5000))
+    port = _find_free_port(requested)
+    if port != requested:
+        print(f"[web] Port {requested} in use — using port {port} instead")
+
+    from web.app import create_app
+    app = create_app(config_path=config_path, base_dir=BASE_DIR, orchestrator=orchestrator)
+
+    flask_thread = threading.Thread(
+        target=lambda: app.run(host="0.0.0.0", port=port, use_reloader=False, threaded=True),
+        daemon=True,
+        name="flask",
+    )
+    flask_thread.start()
+    print(f"[web] UI available at http://localhost:{port}")
+
+    from web.mdns import start_mdns
+    mdns_thread = threading.Thread(
+        target=start_mdns,
+        args=(port, stop_event),
+        daemon=True,
+        name="mdns",
+    )
+    mdns_thread.start()
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Frame TV Dashboard",
@@ -85,6 +128,12 @@ def main():
         "--dev",
         action="store_true",
         help="Enable hot-reload: restart automatically when any .py file changes",
+    )
+    parser.add_argument(
+        "--no-web",
+        action="store_true",
+        dest="no_web",
+        help="Disable the web UI and mDNS registration",
     )
     args = parser.parse_args()
 
@@ -109,9 +158,12 @@ def main():
     if hasattr(signal, "SIGUSR1"):
         signal.signal(signal.SIGUSR1, lambda s, f: orchestrator.force_tick())
 
-    integrations = build_integrations(config, BASE_DIR)
+    integrations = build_integrations(config, BASE_DIR, args.config)
     for integration in integrations:
         integration.start(stop_event)
+
+    if not args.no_web:
+        _start_web(config, args.config, orchestrator, stop_event)
 
     if args.dev:
         start_dev_watcher(BASE_DIR, stop_event)

@@ -1,5 +1,8 @@
+flask>=3.0
+zeroconf>=0.131
 aiohappyeyeballs==2.6.1
 PyYAML>=6.0
+ruamel.yaml>=0.18
 watchdog>=4.0
 aiohttp==3.13.3
 aiosignal==1.4.0

@@ -175,31 +175,37 @@ def _draw_retro_flip_clock(
 
 
 def compute_grid_cells(
-    layout: dict, count: int, width: int, height: int
+    layout: dict, count: int, width: int, height: int, widgets: list = None
 ) -> list[tuple[int, int, int, int]]:
     cols = max(1, int(layout.get("columns", 2)))
     margin = int(layout.get("margin", 120))
     gutter = int(layout.get("gutter", 40))
-    if layout.get("rows") == "auto" or not layout.get("rows"):
-        rows = max(1, math.ceil(count / cols))
-    else:
-        rows = max(1, int(layout.get("rows", 1)))
+
     cell_w = (width - (margin * 2) - (gutter * (cols - 1))) / cols
     max_widget_width = layout.get("max_widget_width")
     if max_widget_width:
         cell_w = min(cell_w, int(max_widget_width))
     panel_w = cols * cell_w + gutter * (cols - 1)
     x_start = width - margin - panel_w
-    cell_h = (height - (margin * 2) - (gutter * (rows - 1))) / rows
+
+    default_cell_h = int(layout.get("default_height", 500))
+
+    col_y = [margin] * cols
     cells = []
     for i in range(count):
-        r = i // cols
         c = i % cols
+        widget = widgets[i] if widgets and i < len(widgets) else {}
+        widget_h = widget.get("height")
+        cell_h_actual = int(widget_h) if widget_h is not None else default_cell_h
+
         x1 = int(x_start + c * (cell_w + gutter))
-        y1 = int(margin + r * (cell_h + gutter))
+        y1 = int(col_y[c])
         x2 = int(x1 + cell_w)
-        y2 = int(y1 + cell_h)
+        y2 = y1 + cell_h_actual
+
         cells.append((x1, y1, x2, y2))
+        col_y[c] = y2 + gutter
+
     return cells
 
 
@@ -296,7 +302,7 @@ def create_dashboard_frame(
 
     draw = ImageDraw.Draw(img)
     widgets = layout.get("widgets", [])
-    cells = compute_grid_cells(layout, len(widgets), 3840, 2160)
+    cells = compute_grid_cells(layout, len(widgets), 3840, 2160, widgets)
     for widget, rect in zip(widgets, cells):
         render_widget(draw, widget, rect, base_dir, font_path)
 

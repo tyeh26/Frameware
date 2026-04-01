@@ -3,6 +3,10 @@
 # Copy this file to config.yaml and edit it.
 # ─────────────────────────────────────────────
 
+# Web UI (served at http://frameware.local:<port>)
+web:
+  port: 5000   # HTTP port for the web UI (default: 5000)
+
 # Samsung Frame TV
 tv:
   ip: "192.168.1.x"  # LAN IP of your Frame TV
@@ -14,20 +18,24 @@ art:
 
 # Dashboard layout
 layout:
-  columns: 2          # Number of widget columns
-  rows: auto          # "auto" to fit all widgets, or a fixed number
-  margin: 120         # Outer margin in pixels (base image is 3840×2160)
-  gutter: 40          # Gap between widgets in pixels
+  columns: 2            # Number of widget columns
+  margin: 120           # Outer margin in pixels (base image is 3840×2160)
+  gutter: 40            # Gap between widgets in pixels
+  default_height: 600   # Default cell height for widgets without an explicit height
   widgets:
     - type: clock
       title: Now
+      height: 420        # Fixed height in pixels; omit to use default_height
       # format: "%H:%M"          # strftime for time (default 24h; flip-clock segments)
       # date_format: "%A, %b %d" # strftime format for the date
       # show_date: true
 
     - type: list
       title: Shop
-      source: lists/shop.json    # Path to a {"items": [...]} JSON file
+      keep_title: groceries      # Exact Keep list/note title; output path is derived automatically
+      # keep_label: Today        # Or filter by Keep label instead of title
+      # source: lists/shop.json  # Or point directly at any {"items": [...]} JSON file
+      # include_checked: false   # Set true to include checked/crossed-off items
 
     - type: note
       title: Note
@@ -50,20 +58,15 @@ integrations:
     # password: "your_google_password"  # only if you don't use master_token
     state_file: data/keep/state.json
     sync_interval_seconds: 300          # How often to sync from Keep (seconds)
-    targets:
-      - type: list
-        title: groceries                # Exact title of the Keep list
-        output: data/keep/shop.json
-        include_checked: false          # Set true to include crossed-off items
 
-      - type: list
-        label: Today                    # Keep label to filter by
-        output: data/keep/today.json
-        include_checked: false
-
-      - type: note
-        title: Frame Note               # Exact title of the Keep note
-        output: data/keep/note.json
+    # --- Auto-discovery ---
+    # Any Keep list whose title starts with the prefix below is automatically
+    # synced and added as a widget at the bottom of layout.widgets.
+    # Example: a Keep list named "Frameware. Errands" will appear on the frame
+    # as a widget titled "Errands" with its data saved to data/keep/errands.json.
+    auto_discover:
+      enabled: true
+      prefix: "Frameware"              # Strip this prefix (case-insensitive) + any . / or space
 
   # Google Calendar (not yet implemented — scaffold only)
   calendar:
