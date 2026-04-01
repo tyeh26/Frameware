@@ -4,6 +4,8 @@ config.yaml
 # All runtime/local data: integration outputs, sync state, credentials
 data/
 
+www/
+
 dev/
 
 # Python
