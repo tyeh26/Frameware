@@ -144,12 +144,16 @@ def render_widget(
     body_left = x1 + pad
     body_right = x2 - pad
 
+    # Relative widget sources (e.g. data/keep/*.json) live under data_dir; base_dir is the app
+    # root (fonts). In Docker FRAMEWARE_DATA_DIR separates these; locally they are often the same.
+    data_root = data_dir if data_dir is not None else base_dir
+
     if wtype == "clock":
         render_clock(draw, widget, body_left, body_top, body_right, y2 - pad, font_path)
         return
 
     if wtype == "weather":
-        dd = data_dir if data_dir is not None else base_dir
+        dd = data_root
         render_weather(
             draw,
             widget,
@@ -164,7 +168,7 @@ def render_widget(
         return
 
     if wtype == "list":
-        items = load_list_items(widget.get("source"), base_dir)
+        items = load_list_items(widget.get("source"), data_root)
         if not items:
             items = ["(empty)"]
         max_items = widget.get("max_items")
@@ -193,7 +197,7 @@ def render_widget(
     # note / fallback: supports inline text or a source file
     text = widget.get("text", "")
     if not text and widget.get("source"):
-        items = load_list_items(widget.get("source"), base_dir)
+        items = load_list_items(widget.get("source"), data_root)
         text = "\n".join(items)
     lines = wrap_text(draw, text, body_font, body_right - body_left)
     y = body_top
