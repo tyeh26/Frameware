@@ -256,11 +256,17 @@ class KeepFetcher(IntegrationBase):
     # --- helpers ---
 
     def _get_master_token(self, email: str, config_token: str = None) -> str | None:
-        if _keyring_available and email:
+        if config_token:
+            return config_token
+        if not _keyring_available or not email:
+            return None
+        try:
             token = keyring.get_password(KEYRING_SERVICE, email)
             if token:
                 return token
-        return config_token
+        except Exception:
+            pass
+        return None
 
     def _load_state(self, state_path: str) -> dict | None:
         if not state_path or not os.path.exists(state_path):

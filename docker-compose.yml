@@ -8,6 +8,7 @@ services:
     environment:
       TZ: America/Los_Angeles
       FRAMEWARE_DATA_DIR: /app/userdata
+      # OPENWEATHERMAP_API_KEY: "your_key"   # One Call 3.0 + Geocoding
       # FRAMEWARE_RESET_CONFIG: "true"   # uncomment to re-seed config.yaml from example on next start
     volumes:
       - ./userdata:/app/userdata          # mutable data: config.yaml, art/, data/, www/

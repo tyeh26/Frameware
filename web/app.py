@@ -78,7 +78,7 @@ def create_app(
         layout = resolve_widget_sources(config.get("layout", {}))
         try:
             os.makedirs(os.path.dirname(preview_path), exist_ok=True)
-            data = create_dashboard_frame(base_art, layout, base_dir, preview_path)
+            data = create_dashboard_frame(base_art, layout, base_dir, preview_path, full_config=config)
         except Exception as e:
             return jsonify({"error": f"Render failed: {e}"}), 500
 

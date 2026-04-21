@@ -7,6 +7,7 @@ from PIL import Image, ImageDraw
 from frame.layout import apply_widget_anchors
 from frame.utils import get_font, wrap_text
 from frame.widgets.clock import CLOCK_SIZES, render_clock
+from frame.widgets.weather import render_weather
 
 
 def load_list_items(source: str, base_dir: str) -> list[str]:
@@ -115,6 +116,8 @@ def render_widget(
     rect: tuple,
     base_dir: str,
     font_path: str = None,
+    data_dir: str | None = None,
+    full_config: dict | None = None,
 ):
     x1, y1, x2, y2 = rect
     pad = 24
@@ -122,7 +125,12 @@ def render_widget(
     body_font = get_font(72, font_path)
 
     wtype = widget.get("type", "note")
-    card_fill = (0, 0, 0) if wtype == "clock" else (20, 20, 20)
+    if wtype == "clock":
+        card_fill = (0, 0, 0)
+    elif wtype == "weather":
+        card_fill = (18, 22, 28)
+    else:
+        card_fill = (20, 20, 20)
     draw.rounded_rectangle([x1, y1, x2, y2], radius=24, fill=card_fill)
 
     title = widget.get("title", "").strip()
@@ -138,6 +146,21 @@ def render_widget(
 
     if wtype == "clock":
         render_clock(draw, widget, body_left, body_top, body_right, y2 - pad, font_path)
+        return
+
+    if wtype == "weather":
+        dd = data_dir if data_dir is not None else base_dir
+        render_weather(
+            draw,
+            widget,
+            body_left,
+            body_top,
+            body_right,
+            y2 - pad,
+            dd,
+            full_config,
+            font_path,
+        )
         return
 
     if wtype == "list":
@@ -184,9 +207,11 @@ def create_dashboard_frame(
     layout: dict,
     base_dir: str,
     preview_path: str,
+    full_config: dict | None = None,
 ) -> bytes:
     """Generates a 4K dashboard JPEG from a base image and layout config."""
     font_path = os.path.join(base_dir, "fonts", "Roboto-Bold.ttf")
+    data_dir = os.path.dirname(os.path.dirname(os.path.abspath(preview_path)))
 
     img = Image.open(base_image_path).convert("RGB")
     if img.size != (3840, 2160):
@@ -203,12 +228,12 @@ def create_dashboard_frame(
 
     for widget in explicit:
         rect = widget_rect_from_grid(widget, layout, 3840, 2160)
-        render_widget(draw, widget, rect, base_dir, font_path)
+        render_widget(draw, widget, rect, base_dir, font_path, data_dir, full_config)
 
     if implicit:
         cells = compute_grid_cells(layout, len(implicit), 3840, 2160, implicit)
         for widget, rect in zip(implicit, cells):
-            render_widget(draw, widget, rect, base_dir, font_path)
+            render_widget(draw, widget, rect, base_dir, font_path, data_dir, full_config)
 
     img.save(preview_path, quality=85)
 

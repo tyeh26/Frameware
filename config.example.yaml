@@ -53,6 +53,11 @@ layout:
     #   w: 3
     #   h: 2
 
+    - type: weather
+      title: ""            # Omit or leave empty to use the city name from geocoding
+      height: 420
+      # Requires integrations.openweather.enabled: true and OPENWEATHERMAP_API_KEY (or api_key).
+
     - type: note
       title: Note
       text: "Welcome to your Frame Dashboard."
@@ -83,6 +88,17 @@ integrations:
     auto_discover:
       enabled: true
       prefix: "Frameware"              # Strip this prefix (case-insensitive) + any . / or space
+
+  # OpenWeatherMap (Geocoding + One Call API 3.0) — weather widget
+  openweather:
+    enabled: false
+    zip: "94705"
+    country: "US"
+    cache_seconds: 600
+    # Prefer an environment variable (Docker / systemd) instead of a key in this file:
+    #   export OPENWEATHERMAP_API_KEY=your_key
+    # Or set api_key here (less secure):
+    # api_key: "your_openweathermap_key"
 
   # Google Calendar (not yet implemented — scaffold only)
   calendar:

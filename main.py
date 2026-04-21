@@ -11,8 +11,9 @@ Usage:
   python main.py --reset-config            # re-seed config.yaml from config.example.yaml
 
 Environment variables:
-  FRAMEWARE_DATA_DIR     Override the mutable data directory (same as --data-dir)
-  FRAMEWARE_RESET_CONFIG Set to "true" to force re-seed config on startup
+  FRAMEWARE_DATA_DIR        Override the mutable data directory (same as --data-dir)
+  FRAMEWARE_RESET_CONFIG    Set to "true" to force re-seed config on startup
+  OPENWEATHERMAP_API_KEY    OpenWeatherMap key for the weather widget (recommended)
 """
 
 import argparse
@@ -169,8 +170,9 @@ def main():
             "  SIGINT  (Ctrl+C) — graceful shutdown\n"
             "  SIGUSR1           — force an immediate frame update\n\n"
             "Environment variables:\n"
-            "  FRAMEWARE_DATA_DIR     Mutable data directory (config, art, www, data/)\n"
-            "  FRAMEWARE_RESET_CONFIG Set to 'true' to re-seed config.yaml from example"
+            "  FRAMEWARE_DATA_DIR        Mutable data directory (config, art, www, data/)\n"
+            "  FRAMEWARE_RESET_CONFIG    Set to 'true' to re-seed config.yaml from example\n"
+            "  OPENWEATHERMAP_API_KEY    OpenWeatherMap API key for weather widget"
         ),
     )
     parser.add_argument(

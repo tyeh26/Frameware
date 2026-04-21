@@ -60,7 +60,9 @@ class Orchestrator:
 
             if base_art and os.path.exists(base_art):
                 try:
-                    frame_data = create_dashboard_frame(base_art, layout, self.base_dir, preview_path)
+                    frame_data = create_dashboard_frame(
+                        base_art, layout, self.base_dir, preview_path, full_config=config
+                    )
                     if stop_event.is_set():
                         break
                     if tv_ip:
@@ -92,7 +94,7 @@ class Orchestrator:
         return 60 - now.second - (now.microsecond / 1_000_000)
 
     def _ensure_dirs(self):
-        for subdir in ("www", "art", "art/uploads", "data/frame", "data/keep", "data/calendar"):
+        for subdir in ("www", "art", "art/uploads", "data/frame", "data/keep", "data/calendar", "data/weather"):
             os.makedirs(os.path.join(self.data_dir, subdir), exist_ok=True)
 
     def _migrate_legacy_state(self):
