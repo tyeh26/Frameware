@@ -9,16 +9,25 @@ web:
 
 # Samsung Frame TV
 tv:
-  ip: "192.168.1.x"  # LAN IP of your Frame TV
+  # LAN IP of your Frame TV (IPv4). You can also set this from the web UI: open the app,
+  # use Frame TV → Discover, pick your TV, then Save & apply TV IP.
+  ip: "192.168.1.x"
 
 # Art upload settings
 art:
   matte: "none"           # Landscape matte applied on upload (e.g. "none", "shadowbox_polar")
   portrait_matte: "none"  # Portrait matte applied on upload
+  # WebSocket timeout (seconds) for TV API calls. After sleep/wake, stale sockets can
+  # otherwise block indefinitely; Ctrl+C may not run until the call returns. Default 30.
+  # Set to 0 to use the library default (no timeout).
+  # connection_timeout_seconds: 30
 
 # Dashboard layout
 layout:
-  columns: 2            # Number of widget columns
+  columns: 2            # Number of widget columns (12 is typical for Gridstack-style x/y/w/h)
+  # cell_height: 200    # Pixel height of one grid row (used with x/y/w/h placement)
+  # gutter: 40          # Gap between grid cells (pixels)
+  # rows: 8             # Optional: override row count for anchor math; default is computed from cell_height
   margin: 120           # Outer margin in pixels (base image is 3840×2160)
   gutter: 40            # Gap between widgets in pixels
   default_height: 600   # Default cell height for widgets without an explicit height
@@ -36,6 +45,13 @@ layout:
       # keep_label: Today        # Or filter by Keep label instead of title
       # source: lists/shop.json  # Or point directly at any {"items": [...]} JSON file
       # include_checked: false   # Set true to include checked/crossed-off items
+      # max_items: 20            # Cap list length; overflow is shown as "…" (also clips if the box runs out of vertical space)
+
+    # Grid placement (optional): x, y, w, h are column/row counts in the same sense as Gridstack.js.
+    # Or omit x/y and use anchor + w/h so you do not have to compute bottom-right by hand:
+    #   anchor: bottom-right   # also: top-left, top-right, bottom-left, top, bottom, left, right, center
+    #   w: 3
+    #   h: 2
 
     - type: note
       title: Note

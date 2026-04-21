@@ -12,6 +12,9 @@ def get_font(size: int, font_path: str = None) -> ImageFont.FreeTypeFont:
         "/Library/Fonts/Arial.ttf",
         "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
         "/System/Library/Fonts/Supplemental/Arial.ttf",
+        # Linux / Docker (e.g. fonts-dejavu-core); slim images have no Arial.
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
     ]
     for path in candidates:
         if os.path.exists(path):

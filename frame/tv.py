@@ -10,9 +10,15 @@ def push_to_tv(image_data: bytes, tv_ip: str, history_file: str, art_cfg: dict =
     art_cfg = art_cfg or {}
     matte = art_cfg.get("matte", "none")
     portrait_matte = art_cfg.get("portrait_matte", "none")
+    # Default finite timeout so stale connections after sleep/wake do not block forever.
+    # 0 = library default (no timeout); see config.example.yaml
+    raw_timeout = art_cfg.get("connection_timeout_seconds", 30)
+    if raw_timeout is None:
+        raw_timeout = 30
+    ws_timeout = None if raw_timeout == 0 else float(raw_timeout)
 
     try:
-        tv = SamsungTVWS(tv_ip)
+        tv = SamsungTVWS(tv_ip, timeout=ws_timeout)
         art = tv.art()
 
         try:

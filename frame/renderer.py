@@ -4,6 +4,7 @@ import os
 
 from PIL import Image, ImageDraw
 
+from frame.layout import apply_widget_anchors
 from frame.utils import get_font, wrap_text
 from frame.widgets.clock import CLOCK_SIZES, render_clock
 
@@ -120,7 +121,9 @@ def render_widget(
     title_font = get_font(96, font_path)
     body_font = get_font(72, font_path)
 
-    draw.rounded_rectangle([x1, y1, x2, y2], radius=24, fill=(20, 20, 20))
+    wtype = widget.get("type", "note")
+    card_fill = (0, 0, 0) if wtype == "clock" else (20, 20, 20)
+    draw.rounded_rectangle([x1, y1, x2, y2], radius=24, fill=card_fill)
 
     title = widget.get("title", "").strip()
     if title:
@@ -133,8 +136,6 @@ def render_widget(
     body_left = x1 + pad
     body_right = x2 - pad
 
-    wtype = widget.get("type", "note")
-
     if wtype == "clock":
         render_clock(draw, widget, body_left, body_top, body_right, y2 - pad, font_path)
         return
@@ -143,12 +144,26 @@ def render_widget(
         items = load_list_items(widget.get("source"), base_dir)
         if not items:
             items = ["(empty)"]
+        max_items = widget.get("max_items")
+        if max_items is not None:
+            cap = max(0, int(max_items))
+            truncated = len(items) > cap
+            items = items[:cap]
+            if truncated and cap > 0:
+                items.append("…")
+            elif truncated and cap == 0:
+                items = ["…"]
+        content_bottom = y2 - pad
         y = body_top
         for item in items:
             lines = wrap_text(draw, f"• {item}", body_font, body_right - body_left)
             for line in lines:
+                line_h = body_font.getbbox(line)[3] - body_font.getbbox(line)[1]
+                if y + line_h > content_bottom:
+                    draw.text((body_left, y), "…", fill="white", font=body_font)
+                    return
                 draw.text((body_left, y), line, fill="white", font=body_font)
-                y += body_font.getbbox(line)[3] - body_font.getbbox(line)[1] + 8
+                y += line_h + 8
             y += 6
         return
 
@@ -178,7 +193,7 @@ def create_dashboard_frame(
         img = img.resize((3840, 2160), Image.Resampling.LANCZOS)
 
     draw = ImageDraw.Draw(img)
-    widgets = layout.get("widgets", [])
+    widgets = apply_widget_anchors(layout.get("widgets", []), layout, 3840, 2160)
 
     # Widgets with explicit x/y/w/h use Gridstack-native grid positioning.
     # Widgets without those keys fall back to legacy auto-flow placement.

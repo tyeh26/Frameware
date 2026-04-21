@@ -1,0 +1,13 @@
+services:
+  frameware:
+    build: .
+    image: frameware
+    container_name: frameware
+    ports:
+      - "5005:5000"
+    environment:
+      TZ: America/Los_Angeles
+      FRAMEWARE_DATA_DIR: /app/userdata
+      # FRAMEWARE_RESET_CONFIG: "true"   # uncomment to re-seed config.yaml from example on next start
+    volumes:
+      - ./userdata:/app/userdata          # mutable data: config.yaml, art/, data/, www/

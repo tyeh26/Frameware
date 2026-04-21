@@ -19,16 +19,13 @@ def _draw_flip_cell(
 ) -> None:
     """Single split-flap style card (retro flip clock)."""
     r = max(6, min(14, h // 12))
-    bg = (38, 38, 42)
-    edge = (72, 72, 78)
-    hinge = (12, 12, 14)
-    top_shade = (48, 48, 52)
-    digit = (245, 240, 232)
+    # Each flap: white on #222222; module background is black (renderer).
+    flap = (34, 34, 34)
+    hinge = (0, 0, 0)
+    digit = (255, 255, 255)
 
-    draw.rounded_rectangle([x, y, x + w, y + h], radius=r, fill=bg, outline=edge, width=2)
+    draw.rounded_rectangle([x, y, x + w, y + h], radius=r, fill=flap)
     mid = y + h // 2
-    draw.rectangle([x + 3, y + 3, x + w - 3, mid], fill=top_shade)
-    draw.line([(x + r, mid), (x + w - r, mid)], fill=hinge, width=3)
 
     bbox = draw.textbbox((0, 0), char, font=font)
     tw = bbox[2] - bbox[0]
@@ -36,6 +33,9 @@ def _draw_flip_cell(
     tx = x + (w - tw) // 2 - bbox[0]
     ty = y + (h - th) // 2 - bbox[1]
     draw.text((tx, ty), char, fill=digit, font=font)
+
+    hinge_w = max(2, min(4, h // 28))
+    draw.line([(x, mid), (x + w, mid)], fill=hinge, width=hinge_w)
 
 
 def _draw_retro_flip_clock(

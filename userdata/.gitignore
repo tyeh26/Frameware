@@ -1,0 +1,6 @@
+# Runtime user data — not committed.
+# The userdata/ directory itself is tracked (.gitkeep) so Docker bind-mount works
+# without requiring a manual mkdir. Contents are host-specific.
+*
+!.gitkeep
+!.gitignore

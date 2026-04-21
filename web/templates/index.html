@@ -59,6 +59,10 @@
       .layout { grid-template-columns: 1fr; }
     }
 
+    .card-span {
+      grid-column: 1 / -1;
+    }
+
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -163,6 +167,310 @@
       color: var(--text);
     }
     .btn-secondary:hover:not(:disabled) { background: #3a3a42; }
+
+    .tv-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tv-line {
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .tv-line.muted { color: var(--muted); }
+
+    .tv-warn {
+      font-size: 12px;
+      color: #f59e0b;
+      margin-bottom: 12px;
+    }
+
+    .tv-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .tv-list:empty { display: none; }
+
+    .tv-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      background: var(--bg);
+    }
+
+    .tv-row:has(input:checked) {
+      border-color: var(--accent);
+      background: rgba(99, 102, 241, 0.08);
+    }
+
+    .tv-row.tv-row-info {
+      cursor: default;
+      opacity: 0.92;
+    }
+
+    .tv-row.tv-row-info .tv-meta { color: #f59e0b; }
+
+    .tv-row input { margin-top: 3px; accent-color: var(--accent); }
+
+    .tv-row-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+    }
+
+    .tv-row-text .tv-meta {
+      font-size: 12px;
+      color: var(--muted);
+      white-space: pre-line;
+    }
+
+    .tv-legend {
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    .tv-legend summary {
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--muted);
+      list-style-position: outside;
+    }
+
+    .tv-legend summary:hover { color: var(--text); }
+
+    .tv-legend-table-wrap {
+      overflow-x: auto;
+      border-top: 1px solid var(--border);
+    }
+
+    .tv-legend table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .tv-legend th,
+    .tv-legend td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .tv-legend th {
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 10px;
+    }
+
+    .tv-legend tr:last-child td { border-bottom: none; }
+
+    .tv-legend .suffix {
+      font-family: "SF Mono", Menlo, Monaco, monospace;
+      color: var(--accent-hover);
+      white-space: nowrap;
+    }
+
+    /* Image panel */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.drag-over {
+      border-color: var(--accent);
+      background: rgba(99, 102, 241, 0.06);
+    }
+
+    .upload-zone-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+      color: var(--muted);
+    }
+
+    .upload-zone p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .upload-zone p:last-child {
+      font-size: 11px;
+      color: #52525b;
+    }
+
+    .btn-link {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--accent-hover);
+      font-size: inherit;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .btn-link:hover { color: #a5b4fc; }
+
+    .upload-progress-wrap {
+      margin-top: 12px;
+    }
+
+    .progress-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    .upload-progress-label {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .img-notice {
+      margin-top: 14px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .img-notice strong { color: var(--text); }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .img-tile {
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.15s;
+    }
+
+    .img-tile.active {
+      border-color: var(--accent);
+    }
+
+    .img-tile-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+      background: #111;
+    }
+
+    .img-tile-thumb.placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: var(--border);
+    }
+
+    .img-tile-body {
+      padding: 8px 10px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .img-tile-name {
+      font-size: 11px;
+      color: var(--muted);
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    .img-tile-footer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-active {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-hover);
+      background: rgba(99, 102, 241, 0.15);
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+
+    .badge-config {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.12);
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+
+    .btn-xs {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+    }
+
+    .img-empty {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .img-panel-status {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .img-panel-status.ok  { color: var(--success); }
+    .img-panel-status.err { color: var(--error); }
   </style>
 </head>
 <body>
@@ -172,6 +480,58 @@
   </header>
 
   <div class="layout">
+
+    <!-- Samsung TV discovery (any Tizen set that answers REST; Frame hints optional) -->
+    <div class="card card-span">
+      <div class="card-header">
+        <h2>Samsung TV</h2>
+        <div class="tv-toolbar">
+          <button type="button" class="btn-secondary" id="btn-discover-tv">Discover</button>
+          <button type="button" class="btn-primary" id="btn-apply-tv" disabled>Save &amp; apply TV IP</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="tv-line" id="tv-current-line">Loading current TV…</p>
+        <p class="tv-warn" id="tv-reachable-warn" hidden></p>
+        <p class="tv-line muted" id="tv-discover-status"></p>
+        <div class="tv-list" id="tv-list" role="radiogroup" aria-label="Discovered TVs"></div>
+      </div>
+    </div>
+
+    <!-- Image panel -->
+    <div class="card card-span">
+      <div class="card-header">
+        <h2>Image</h2>
+        <span id="img-panel-status" class="img-panel-status"></span>
+      </div>
+      <div class="card-body">
+
+        <!-- Upload zone -->
+        <div id="upload-zone" class="upload-zone" role="button" tabindex="0" aria-label="Upload image">
+          <input type="file" id="file-input" accept=".jpg,.jpeg,.png,.webp" hidden>
+          <div class="upload-zone-icon">⬆</div>
+          <p>Drag &amp; drop an image here, or <button type="button" class="btn-link" id="btn-browse">browse</button></p>
+          <p>JPG, PNG, or WebP — max 50 MB</p>
+        </div>
+
+        <!-- Progress -->
+        <div class="upload-progress-wrap" id="upload-progress-wrap" hidden>
+          <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+          <p class="upload-progress-label" id="upload-progress-label">Uploading…</p>
+        </div>
+
+        <!-- Config-image notice (shown when active image is outside uploads/) -->
+        <div class="img-notice" id="img-config-notice" hidden>
+          Active image is set via config: <strong id="img-config-path"></strong>.
+          Upload a new image below to replace it, or edit <code>art.base_image</code> in the Config editor.
+        </div>
+
+        <!-- Image grid -->
+        <div id="image-grid" class="image-grid"></div>
+        <p id="image-grid-empty" class="img-empty" hidden>No uploaded images yet.</p>
+
+      </div>
+    </div>
 
     <!-- Preview card -->
     <div class="card">
@@ -210,58 +570,272 @@
     const btnSave       = document.getElementById('btn-save');
     const hostHint      = document.getElementById('host-hint');
 
+    const tvCurrentLine   = document.getElementById('tv-current-line');
+    const tvReachableWarn = document.getElementById('tv-reachable-warn');
+    const tvDiscoverStatus = document.getElementById('tv-discover-status');
+    const tvList          = document.getElementById('tv-list');
+    const btnDiscoverTv   = document.getElementById('btn-discover-tv');
+    const btnApplyTv      = document.getElementById('btn-apply-tv');
+
     hostHint.textContent = window.location.host;
 
-    // --- Preview ---
+    // --- Preview: prefer POST /api/render (sync with current config, no wait for TV loop) ---
 
-    let lastUpdated = null;
-
-    function reloadPreview() {
-      const url = '/api/preview?t=' + Date.now();
-      const img = new Image();
-      img.onload = () => {
-        previewImg.src = url;
-        lastUpdated = new Date();
-        previewStatus.textContent = 'Updated ' + lastUpdated.toLocaleTimeString();
-      };
-      img.onerror = () => {
-        previewStatus.textContent = 'Preview not yet available.';
-      };
-      img.src = url;
+    async function reloadPreview() {
+      previewStatus.textContent = 'Loading…';
+      try {
+        let r = await fetch('/api/preview?t=' + Date.now());
+        if (!r.ok) {
+          r = await fetch('/api/render', { method: 'POST' });
+        }
+        if (!r.ok) {
+          const ct = r.headers.get('content-type') || '';
+          const err = ct.includes('json')
+            ? (await r.json()).error
+            : await r.text();
+          previewStatus.textContent = err || 'Preview not yet available.';
+          return;
+        }
+        const blob = await r.blob();
+        previewImg.src = URL.createObjectURL(blob);
+        previewStatus.textContent = 'Updated ' + new Date().toLocaleTimeString();
+      } catch (e) {
+        previewStatus.textContent = 'Could not load preview: ' + e;
+      }
     }
 
     reloadPreview();
-    setInterval(reloadPreview, 60_000);
+    setInterval(async () => {
+      try {
+        const r = await fetch('/api/render', { method: 'POST' });
+        if (!r.ok) return;
+        const blob = await r.blob();
+        previewImg.src = URL.createObjectURL(blob);
+        previewStatus.textContent = 'Updated ' + new Date().toLocaleTimeString();
+      } catch (_) { /* ignore */ }
+    }, 60_000);
 
-    btnRefresh.addEventListener('click', () => {
+    btnRefresh.addEventListener('click', async () => {
       btnRefresh.disabled = true;
-      btnRefresh.textContent = 'Refreshing…';
-      fetch('/api/refresh', { method: 'POST' })
-        .then(r => r.json())
-        .then(() => {
-          // Give the orchestrator a few seconds to render then reload preview
-          setTimeout(() => {
-            reloadPreview();
-            btnRefresh.disabled = false;
-            btnRefresh.textContent = 'Refresh Now';
-          }, 4000);
-        })
-        .catch(() => {
-          btnRefresh.disabled = false;
-          btnRefresh.textContent = 'Refresh Now';
-        });
+      btnRefresh.textContent = 'Rendering…';
+      try {
+        const r = await fetch('/api/render', { method: 'POST' });
+        if (!r.ok) {
+          const data = await r.json().catch(() => ({}));
+          previewStatus.textContent = data.error || await r.text();
+          return;
+        }
+        const blob = await r.blob();
+        previewImg.src = URL.createObjectURL(blob);
+        previewStatus.textContent = 'Updated ' + new Date().toLocaleTimeString();
+        fetch('/api/refresh', { method: 'POST' }).catch(() => {});
+      } catch (e) {
+        previewStatus.textContent = String(e);
+      } finally {
+        btnRefresh.disabled = false;
+        btnRefresh.textContent = 'Refresh Now';
+      }
     });
 
     // --- Config editor ---
 
     function loadConfig() {
-      fetch('/api/config')
+      return fetch('/api/config')
         .then(r => r.text())
         .then(text => { configTA.value = text; })
         .catch(() => { configTA.value = '# Could not load config'; });
     }
 
     loadConfig();
+
+    // --- Frame TV (discover / apply IP) ---
+
+    function _tvLabel(c) {
+      if (!c.responded) {
+        return {
+          title: c.ip,
+          meta: 'SSDP only — Samsung REST (port 8001) did not return device info (TV off, blocked, or not Tizen).',
+        };
+      }
+      const name = c.name || 'Samsung TV';
+      const model = c.model || '';
+      const fs = c.frame_series;
+      const suffixLine = c.model_code
+        ? `Matched suffix: ${c.model_code}${fs && fs.years ? ' (~' + fs.years + ')' : ''}`
+        : 'No known The Frame suffix in model string — still valid if this is your TV.';
+      const bits = [
+        model && `Model: ${model}`,
+        suffixLine,
+        c.type && `Type: ${c.type}`,
+        `IP: ${c.ip}`,
+      ].filter(Boolean);
+      return { title: name, meta: bits.join('\n') };
+    }
+
+    function updateApplyTvEnabled() {
+      const picked = tvList.querySelector('input[name="tv-pick"]:checked');
+      btnApplyTv.disabled = !picked;
+    }
+
+    function loadTv() {
+      return fetch('/api/tv')
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) {
+            tvCurrentLine.textContent = 'Could not read TV settings: ' + data.error;
+            tvReachableWarn.hidden = true;
+            return;
+          }
+          const ip = data.ip;
+          if (!ip) {
+            tvCurrentLine.textContent = 'Current TV IP: not set (frame will not be pushed to a TV).';
+          } else {
+            tvCurrentLine.textContent = 'Current TV IP: ' + ip;
+          }
+          if (ip && data.reachable === false) {
+            tvReachableWarn.textContent = 'This address is not responding to Samsung REST on port 8001 (TV may be off, blocked, or wrong IP).';
+            tvReachableWarn.hidden = false;
+          } else {
+            tvReachableWarn.hidden = true;
+          }
+        })
+        .catch(e => {
+          tvCurrentLine.textContent = 'Could not load TV settings: ' + e;
+          tvReachableWarn.hidden = true;
+        });
+    }
+
+    loadTv();
+
+    tvList.addEventListener('change', updateApplyTvEnabled);
+    tvList.addEventListener('click', e => {
+      const row = e.target.closest('.tv-row');
+      if (!row) return;
+      const input = row.querySelector('input[type="radio"]');
+      if (input && e.target !== input) {
+        input.checked = true;
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    });
+
+    btnDiscoverTv.addEventListener('click', async () => {
+      btnDiscoverTv.disabled = true;
+      btnApplyTv.disabled = true;
+      tvList.innerHTML = '';
+      tvDiscoverStatus.textContent = 'Searching the LAN…';
+      try {
+        const r = await fetch('/api/tv/discover', { method: 'POST' });
+        const data = await r.json();
+        if (!r.ok) {
+          tvDiscoverStatus.textContent = data.error || 'Discovery failed.';
+          return;
+        }
+        const candidates = Array.isArray(data.candidates)
+          ? data.candidates
+          : (data.tvs || []).map(t => ({ ...t, responded: true }));
+        const ok = (data.tvs || []).filter(t => t && t.ip);
+        if (candidates.length === 0) {
+          tvDiscoverStatus.textContent = 'No devices seen via SSDP. Check Wi‑Fi and that the TV is on.';
+          return;
+        }
+        const nOk = ok.length;
+        const nCand = candidates.length;
+        if (nOk === 0) {
+          tvDiscoverStatus.textContent = nCand === 1
+            ? '1 SSDP candidate — none returned Samsung device info. See details below.'
+            : `${nCand} SSDP candidates — none returned Samsung device info. See details below.`;
+        } else if (nOk === nCand) {
+          tvDiscoverStatus.textContent = nOk === 1
+            ? 'Found 1 TV — select below if needed, then Save & apply.'
+            : `Found ${nOk} TVs — pick one, then Save & apply.`;
+        } else {
+          tvDiscoverStatus.textContent = `${nOk} of ${nCand} candidates returned device info — pick one, then Save & apply.`;
+        }
+        let firstSelectable = -1;
+        candidates.forEach((c, i) => {
+          const selectable = c.responded === true;
+          if (selectable && firstSelectable < 0) firstSelectable = i;
+        });
+        candidates.forEach((c, i) => {
+          const { title, meta } = _tvLabel(c);
+          const selectable = c.responded === true;
+          const row = document.createElement(selectable ? 'label' : 'div');
+          row.className = selectable ? 'tv-row' : 'tv-row tv-row-info';
+          if (!selectable) row.setAttribute('role', 'listitem');
+          if (selectable) {
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = 'tv-pick';
+            input.value = c.ip;
+            if (firstSelectable === i) input.checked = true;
+            const span = document.createElement('span');
+            span.className = 'tv-row-text';
+            const strong = document.createElement('strong');
+            strong.textContent = title;
+            const small = document.createElement('span');
+            small.className = 'tv-meta';
+            small.textContent = meta;
+            span.append(strong, small);
+            row.append(input, span);
+          } else {
+            const span = document.createElement('span');
+            span.className = 'tv-row-text';
+            const strong = document.createElement('strong');
+            strong.textContent = title;
+            const small = document.createElement('span');
+            small.className = 'tv-meta';
+            small.textContent = meta;
+            span.append(strong, small);
+            row.appendChild(span);
+          }
+          tvList.appendChild(row);
+        });
+      } catch (e) {
+        tvDiscoverStatus.textContent = 'Network error: ' + e;
+      } finally {
+        btnDiscoverTv.disabled = false;
+        updateApplyTvEnabled();
+      }
+    });
+
+    btnApplyTv.addEventListener('click', async () => {
+      const picked = tvList.querySelector('input[name="tv-pick"]:checked');
+      if (!picked) return;
+      btnApplyTv.disabled = true;
+      btnDiscoverTv.disabled = true;
+      tvDiscoverStatus.textContent = 'Applying…';
+      try {
+        const r = await fetch('/api/tv', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ip: picked.value }),
+        });
+        const data = await r.json();
+        if (!r.ok) {
+          tvDiscoverStatus.textContent = data.error || 'Could not save TV IP.';
+          return;
+        }
+        tvDiscoverStatus.textContent = 'TV IP saved — pushing frame…';
+        await loadConfig();
+        await loadTv();
+        try {
+          const rr = await fetch('/api/render', { method: 'POST' });
+          if (rr.ok) {
+            const blob = await rr.blob();
+            previewImg.src = URL.createObjectURL(blob);
+            previewStatus.textContent = 'Updated ' + new Date().toLocaleTimeString();
+          }
+        } catch (_) { /* ignore */ }
+        fetch('/api/refresh', { method: 'POST' }).catch(() => {});
+        tvDiscoverStatus.textContent = 'Saved & applied — config and preview updated.';
+        setTimeout(() => { tvDiscoverStatus.textContent = ''; }, 5000);
+      } catch (e) {
+        tvDiscoverStatus.textContent = 'Network error: ' + e;
+      } finally {
+        btnDiscoverTv.disabled = false;
+        updateApplyTvEnabled();
+      }
+    });
 
     btnSave.addEventListener('click', () => {
       btnSave.disabled = true;
@@ -275,13 +849,23 @@
         body: configTA.value,
       })
         .then(r => r.json())
-        .then(data => {
+        .then(async data => {
           if (data.error) {
             configStatus.textContent = '✗ ' + data.error;
             configStatus.className = 'err';
           } else {
-            configStatus.textContent = '✓ Saved — frame update triggered';
+            configStatus.textContent = '✓ Saved — rendering…';
             configStatus.className = 'ok';
+            try {
+              const rr = await fetch('/api/render', { method: 'POST' });
+              if (rr.ok) {
+                const blob = await rr.blob();
+                previewImg.src = URL.createObjectURL(blob);
+                previewStatus.textContent = 'Updated ' + new Date().toLocaleTimeString();
+              }
+            } catch (_) { /* ignore */ }
+            fetch('/api/refresh', { method: 'POST' }).catch(() => {});
+            configStatus.textContent = '✓ Saved & preview updated';
             setTimeout(() => { configStatus.textContent = ''; configStatus.className = ''; }, 5000);
           }
         })
@@ -305,6 +889,222 @@
         configTA.selectionStart = configTA.selectionEnd = s + 2;
       }
     });
+
+    // ── Image panel ────────────────────────────────────────────────────────
+
+    const uploadZone        = document.getElementById('upload-zone');
+    const fileInput         = document.getElementById('file-input');
+    const btnBrowse         = document.getElementById('btn-browse');
+    const uploadProgressWrap = document.getElementById('upload-progress-wrap');
+    const progressFill      = document.getElementById('progress-fill');
+    const uploadProgressLabel = document.getElementById('upload-progress-label');
+    const imgConfigNotice   = document.getElementById('img-config-notice');
+    const imgConfigPath     = document.getElementById('img-config-path');
+    const imageGrid         = document.getElementById('image-grid');
+    const imageGridEmpty    = document.getElementById('image-grid-empty');
+    const imgPanelStatus    = document.getElementById('img-panel-status');
+
+    function setImgStatus(msg, cls) {
+      imgPanelStatus.textContent = msg;
+      imgPanelStatus.className = 'img-panel-status' + (cls ? ' ' + cls : '');
+      if (cls === 'ok') setTimeout(() => { imgPanelStatus.textContent = ''; imgPanelStatus.className = 'img-panel-status'; }, 4000);
+    }
+
+    function buildTile(img) {
+      const tile = document.createElement('div');
+      tile.className = 'img-tile' + (img.active ? ' active' : '');
+      tile.dataset.relPath = img.rel_path;
+
+      if (img.thumb_url) {
+        const thumb = document.createElement('img');
+        thumb.className = 'img-tile-thumb';
+        thumb.src = img.thumb_url + '?t=' + Date.now();
+        thumb.alt = img.name;
+        thumb.loading = 'lazy';
+        tile.appendChild(thumb);
+      } else {
+        const ph = document.createElement('div');
+        ph.className = 'img-tile-thumb placeholder';
+        ph.textContent = '🖼';
+        tile.appendChild(ph);
+      }
+
+      const body = document.createElement('div');
+      body.className = 'img-tile-body';
+
+      const name = document.createElement('div');
+      name.className = 'img-tile-name';
+      name.title = img.rel_path;
+      name.textContent = img.name;
+      body.appendChild(name);
+
+      const footer = document.createElement('div');
+      footer.className = 'img-tile-footer';
+
+      if (img.active) {
+        const badge = document.createElement('span');
+        badge.className = 'badge-active';
+        badge.textContent = 'Active';
+        footer.appendChild(badge);
+      }
+      if (img.source === 'config') {
+        const badge = document.createElement('span');
+        badge.className = 'badge-config';
+        badge.textContent = 'Config';
+        footer.appendChild(badge);
+      }
+      if (!img.active) {
+        const btn = document.createElement('button');
+        btn.className = 'btn-secondary btn-xs';
+        btn.textContent = 'Set Active';
+        btn.addEventListener('click', () => activateImage(img.rel_path, tile));
+        footer.appendChild(btn);
+      }
+
+      body.appendChild(footer);
+      tile.appendChild(body);
+      return tile;
+    }
+
+    async function loadImages() {
+      try {
+        const r = await fetch('/api/images');
+        if (!r.ok) { setImgStatus('Could not load images.', 'err'); return; }
+        const data = await r.json();
+        const images = data.images || [];
+
+        imageGrid.innerHTML = '';
+        imageGridEmpty.hidden = true;
+        imgConfigNotice.hidden = true;
+
+        const uploads = images.filter(i => i.source === 'upload');
+        const configImg = images.find(i => i.source === 'config');
+
+        if (configImg) {
+          imgConfigPath.textContent = configImg.rel_path;
+          imgConfigNotice.hidden = false;
+        }
+
+        if (uploads.length === 0) {
+          imageGridEmpty.hidden = false;
+        } else {
+          for (const img of uploads) imageGrid.appendChild(buildTile(img));
+        }
+      } catch (e) {
+        setImgStatus('Error: ' + e, 'err');
+      }
+    }
+
+    async function activateImage(relPath, tileEl) {
+      const btn = tileEl.querySelector('button');
+      if (btn) { btn.disabled = true; btn.textContent = 'Applying…'; }
+      try {
+        const r = await fetch('/api/images/active', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: relPath }),
+        });
+        const data = await r.json();
+        if (!r.ok) { setImgStatus(data.error || 'Could not activate image.', 'err'); return; }
+        setImgStatus('Image activated — rendering…', 'ok');
+        await loadImages();
+        // Refresh the frame preview
+        try {
+          const rr = await fetch('/api/render', { method: 'POST' });
+          if (rr.ok) {
+            const blob = await rr.blob();
+            previewImg.src = URL.createObjectURL(blob);
+            previewStatus.textContent = 'Updated ' + new Date().toLocaleTimeString();
+          }
+        } catch (_) { /* ignore */ }
+        fetch('/api/refresh', { method: 'POST' }).catch(() => {});
+        await loadConfig();
+      } catch (e) {
+        setImgStatus('Error: ' + e, 'err');
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Set Active'; }
+      }
+    }
+
+    function uploadFile(file) {
+      if (!file) return;
+      const maxBytes = 50 * 1024 * 1024;
+      if (file.size > maxBytes) { setImgStatus('File too large (max 50 MB).', 'err'); return; }
+
+      const fd = new FormData();
+      fd.append('file', file);
+
+      uploadProgressWrap.hidden = false;
+      progressFill.style.width = '0%';
+      uploadProgressLabel.textContent = 'Uploading ' + file.name + '…';
+      setImgStatus('', '');
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/api/images');
+
+      xhr.upload.addEventListener('progress', e => {
+        if (e.lengthComputable) {
+          const pct = Math.round(e.loaded / e.total * 100);
+          progressFill.style.width = pct + '%';
+          uploadProgressLabel.textContent = `Uploading… ${pct}%`;
+        }
+      });
+
+      xhr.addEventListener('load', async () => {
+        uploadProgressWrap.hidden = true;
+        progressFill.style.width = '0%';
+        let data = {};
+        try { data = JSON.parse(xhr.responseText); } catch (_) {}
+        if (xhr.status >= 200 && xhr.status < 300) {
+          setImgStatus('Uploaded & activated — rendering…', 'ok');
+          await loadImages();
+          try {
+            const rr = await fetch('/api/render', { method: 'POST' });
+            if (rr.ok) {
+              const blob = await rr.blob();
+              previewImg.src = URL.createObjectURL(blob);
+              previewStatus.textContent = 'Updated ' + new Date().toLocaleTimeString();
+            }
+          } catch (_) { /* ignore */ }
+          fetch('/api/refresh', { method: 'POST' }).catch(() => {});
+          await loadConfig();
+        } else {
+          setImgStatus(data.error || 'Upload failed.', 'err');
+        }
+      });
+
+      xhr.addEventListener('error', () => {
+        uploadProgressWrap.hidden = true;
+        setImgStatus('Network error during upload.', 'err');
+      });
+
+      xhr.send(fd);
+    }
+
+    // Drag-and-drop
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) uploadFile(file);
+    });
+
+    // Click to open file dialog
+    uploadZone.addEventListener('click', e => {
+      if (e.target !== btnBrowse) fileInput.click();
+    });
+    uploadZone.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+    });
+    btnBrowse.addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) uploadFile(fileInput.files[0]);
+      fileInput.value = '';
+    });
+
+    loadImages();
   </script>
 </body>
 </html>
